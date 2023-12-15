@@ -1,6 +1,6 @@
 package io.andrelucas.business
 
-data class Distance(val value: Double? = 10.0,
+data class Distance(val value: Double = 10.0,
                     val unit: DistanceUnit) {
-    constructor(value: DistanceUnit) : this(null, value)
+    constructor(unit: DistanceUnit) : this(10.0, unit)
 }

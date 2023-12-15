@@ -1,6 +1,13 @@
 package io.andrelucas.app
 
-import io.andrelucas.business.*
+import io.andrelucas.app.toilet.ToiletService
+import io.andrelucas.business.distance.Distance
+import io.andrelucas.business.distance.DistanceCalculator
+import io.andrelucas.business.distance.DistanceUnit
+import io.andrelucas.business.geolocation.Geolocation
+import io.andrelucas.business.toilet.Toilet
+import io.andrelucas.business.toilet.ToiletRepository
+import io.andrelucas.business.toilet.ToiletType
 import io.andrelucas.repository.ToiletRepositoryImpl
 import io.kotest.core.spec.style.FunSpec
 import io.kotest.matchers.shouldBe

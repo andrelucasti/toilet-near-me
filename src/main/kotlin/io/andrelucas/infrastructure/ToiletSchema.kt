@@ -1,13 +1,13 @@
 package io.andrelucas.infrastructure
 
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
-import io.andrelucas.app.ToiletRequest
-import io.andrelucas.app.ToiletResponse
-import io.andrelucas.app.ToiletService
-import io.andrelucas.business.Geolocation
-import io.andrelucas.business.Distance
-import io.andrelucas.business.DistanceUnit
-import io.andrelucas.business.ToiletType
+import io.andrelucas.app.toilet.ToiletRequest
+import io.andrelucas.app.toilet.ToiletResponse
+import io.andrelucas.app.toilet.ToiletService
+import io.andrelucas.business.geolocation.Geolocation
+import io.andrelucas.business.distance.Distance
+import io.andrelucas.business.distance.DistanceUnit
+import io.andrelucas.business.toilet.ToiletType
 
 fun SchemaBuilder.toiletSchema(toiletService: ToiletService) {
     enum<ToiletType> {

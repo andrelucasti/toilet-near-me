@@ -1,4 +1,4 @@
-package io.andrelucas.business
+package io.andrelucas.business.distance
 
 enum class DistanceUnit {
     KILOMETER

@@ -2,7 +2,7 @@ package io.andrelucas.plugins
 
 import com.apurebase.kgraphql.GraphQL
 import io.andrelucas.app.DistanceCalculatorImpl
-import io.andrelucas.app.ToiletService
+import io.andrelucas.app.toilet.ToiletService
 import io.andrelucas.infrastructure.coordinationSchema
 import io.andrelucas.infrastructure.distanceSchema
 import io.andrelucas.infrastructure.toiletSchema

@@ -1,4 +1,4 @@
-package io.andrelucas.business
+package io.andrelucas.business.toilet
 
 enum class ToiletType {
     PUBLIC,

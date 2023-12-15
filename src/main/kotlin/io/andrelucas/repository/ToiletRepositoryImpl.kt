@@ -1,8 +1,8 @@
 package io.andrelucas.repository
 
-import io.andrelucas.business.Geolocation
-import io.andrelucas.business.Toilet
-import io.andrelucas.business.ToiletRepository
+import io.andrelucas.business.geolocation.Geolocation
+import io.andrelucas.business.toilet.Toilet
+import io.andrelucas.business.toilet.ToiletRepository
 
 class ToiletRepositoryImpl : ToiletRepository {
 

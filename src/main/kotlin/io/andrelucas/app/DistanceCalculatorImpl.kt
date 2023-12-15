@@ -1,8 +1,8 @@
 package io.andrelucas.app
 
-import io.andrelucas.business.Geolocation
-import io.andrelucas.business.Distance
-import io.andrelucas.business.DistanceCalculator
+import io.andrelucas.business.geolocation.Geolocation
+import io.andrelucas.business.distance.Distance
+import io.andrelucas.business.distance.DistanceCalculator
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
@@ -11,9 +11,10 @@ import kotlin.math.pow
 //https://forest.moscowfsl.wsu.edu/fswepp/rc/kmlatcon.html
 class DistanceCalculatorImpl : DistanceCalculator {
     override fun calculate(geolocation: Geolocation,
-                           distance: Distance): Geolocation {
+                           distance: Distance
+    ): Geolocation {
 
-        val kilometer = distance.value!!
+        val kilometer = distance.value
         val newLatitude = newLatitude(kilometer, geolocation)
         val newLongitude = newLongitude(kilometer, geolocation)
 
@@ -27,7 +28,8 @@ class DistanceCalculatorImpl : DistanceCalculator {
     }
 
     private fun newLongitude(kilometerEast: Double,
-                             geolocation: Geolocation): Double {
+                             geolocation: Geolocation
+    ): Double {
 
         val longitudeDegree = cos(degreeToRadians(geolocation.latitude)) * degreeAtEquatorInKm(69.172)
         val deltaLongitude = delta(kilometerEast, longitudeDegree)

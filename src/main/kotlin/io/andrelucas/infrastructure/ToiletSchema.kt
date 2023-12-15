@@ -32,7 +32,7 @@ fun SchemaBuilder.toiletSchema() {
         }
     }
 
-    query("toiletNearMe"){
+    query("toiletsNearby"){
         resolver { currentCoordination: Coordination ->
             listOf(
                 ToiletResponse(

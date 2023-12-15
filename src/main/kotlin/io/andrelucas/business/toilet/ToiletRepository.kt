@@ -8,4 +8,5 @@ interface ToiletRepository {
     fun fetchToiletsNearby(startAt: Geolocation,
                            endAt: Geolocation
     ): List<Toilet>
+    fun deleteAll()
 }

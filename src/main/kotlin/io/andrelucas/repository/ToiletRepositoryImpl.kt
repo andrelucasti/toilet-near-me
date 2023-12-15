@@ -1,6 +1,6 @@
 package io.andrelucas.repository
 
-import io.andrelucas.business.Coordination
+import io.andrelucas.business.Geolocation
 import io.andrelucas.business.Toilet
 import io.andrelucas.business.ToiletRepository
 
@@ -12,8 +12,8 @@ class ToiletRepositoryImpl : ToiletRepository {
         data = data + toilet
     }
 
-    override fun fetchToiletsNearby(startAt: Coordination, endAt: Coordination): List<Toilet> {
-        return data.filter { it.coordination.latitude >= startAt.latitude && it.coordination.latitude <= endAt.latitude }
-                .filter { it.coordination.longitude >= startAt.longitude && it.coordination.longitude <= endAt.longitude }
+    override fun fetchToiletsNearby(startAt: Geolocation, endAt: Geolocation): List<Toilet> {
+        return data.filter { it.geolocation.latitude >= startAt.latitude && it.geolocation.latitude <= endAt.latitude }
+                .filter { it.geolocation.longitude >= startAt.longitude && it.geolocation.longitude <= endAt.longitude }
     }
 }

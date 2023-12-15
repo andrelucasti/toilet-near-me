@@ -6,17 +6,17 @@ class ToiletService(private val distanceCalculator: DistanceCalculator,
                     private val toiletRepository: ToiletRepository) {
 
     fun createToilet(toiletRequest: ToiletRequest) : String {
-        val toilet = Toilet.create(toiletRequest.name, toiletRequest.coordination, toiletRequest.type)
+        val toilet = Toilet.create(toiletRequest.name, toiletRequest.geolocation, toiletRequest.type)
         toiletRepository.save(toilet)
 
         return toilet.id.toString()
     }
 
-    fun fetchToiletsNearby(coordination: Coordination,
+    fun fetchToiletsNearby(geolocation: Geolocation,
                            distance: Distance): List<ToiletResponse> {
-        val geoCoordinationCalculated = distanceCalculator.calculate(coordination, distance)
+        val geoCoordinationCalculated = distanceCalculator.calculate(geolocation, distance)
 
-        return toiletRepository.fetchToiletsNearby(coordination, geoCoordinationCalculated)
-                .map { ToiletResponse(it.id.toString(), it.name, it.coordination, it.type) }
+        return toiletRepository.fetchToiletsNearby(geolocation, geoCoordinationCalculated)
+                .map { ToiletResponse(it.id.toString(), it.name, it.geolocation, it.type) }
     }
 }

@@ -11,10 +11,10 @@ class ToiletServiceTest : FunSpec({
 
     test("should return a list of toilets near a given geolocation") {
 
-        val toilet1 = Toilet.create("T1", Coordination(1.0, 1.0), ToiletType.PUBLIC)
-        val toilet2 = Toilet.create("T2", Coordination(1.1, 1.2), ToiletType.PUBLIC)
-        val toilet3 = Toilet.create("T3", Coordination(1.3, 1.3), ToiletType.PUBLIC)
-        val toilet4 = Toilet.create("T4", Coordination(2.0, 2.0), ToiletType.PUBLIC)
+        val toilet1 = Toilet.create("T1", Geolocation(1.0, 1.0), ToiletType.PUBLIC)
+        val toilet2 = Toilet.create("T2", Geolocation(1.1, 1.2), ToiletType.PUBLIC)
+        val toilet3 = Toilet.create("T3", Geolocation(1.3, 1.3), ToiletType.PUBLIC)
+        val toilet4 = Toilet.create("T4", Geolocation(2.0, 2.0), ToiletType.PUBLIC)
 
         repository.save(toilet1)
         repository.save(toilet2)
@@ -23,7 +23,7 @@ class ToiletServiceTest : FunSpec({
 
         val service = ToiletService(distanceCalculator, repository)
         val toilets = service.fetchToiletsNearby(
-            Coordination(1.0, 1.0),
+            Geolocation(1.0, 1.0),
             Distance(100.0, DistanceUnit.KILOMETER)
         )
 

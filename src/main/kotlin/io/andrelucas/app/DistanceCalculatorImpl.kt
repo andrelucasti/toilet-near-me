@@ -1,6 +1,6 @@
 package io.andrelucas.app
 
-import io.andrelucas.business.Coordination
+import io.andrelucas.business.Geolocation
 import io.andrelucas.business.Distance
 import io.andrelucas.business.DistanceCalculator
 import kotlin.math.cos
@@ -10,29 +10,29 @@ import kotlin.math.pow
 
 //https://forest.moscowfsl.wsu.edu/fswepp/rc/kmlatcon.html
 class DistanceCalculatorImpl : DistanceCalculator {
-    override fun calculate(coordination: Coordination,
-                           distance: Distance): Coordination {
+    override fun calculate(geolocation: Geolocation,
+                           distance: Distance): Geolocation {
 
         val kilometer = distance.value!!
-        val newLatitude = newLatitude(kilometer, coordination)
-        val newLongitude = newLongitude(kilometer, coordination)
+        val newLatitude = newLatitude(kilometer, geolocation)
+        val newLongitude = newLongitude(kilometer, geolocation)
 
-        return Coordination(newLatitude, newLongitude)
+        return Geolocation(newLatitude, newLongitude)
     }
 
-    private fun newLatitude(kilometerEast: Double, coordination: Coordination): Double{
+    private fun newLatitude(kilometerEast: Double, geolocation: Geolocation): Double{
         val oneDegreeLatitude = degreeAtEquatorInKm( 68.875)
         val deltaLatitude = delta(kilometerEast, oneDegreeLatitude)
-        return round(coordination.latitude + deltaLatitude)
+        return round(geolocation.latitude + deltaLatitude)
     }
 
     private fun newLongitude(kilometerEast: Double,
-                             coordination: Coordination): Double {
+                             geolocation: Geolocation): Double {
 
-        val longitudeDegree = cos(degreeToRadians(coordination.latitude)) * degreeAtEquatorInKm(69.172)
+        val longitudeDegree = cos(degreeToRadians(geolocation.latitude)) * degreeAtEquatorInKm(69.172)
         val deltaLongitude = delta(kilometerEast, longitudeDegree)
 
-        return round(coordination.longitude + deltaLongitude)
+        return round(geolocation.longitude + deltaLongitude)
     }
 
     private fun degreeAtEquatorInKm(degree: Double): Double {

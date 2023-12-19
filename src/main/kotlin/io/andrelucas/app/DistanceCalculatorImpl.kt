@@ -6,8 +6,6 @@ import io.andrelucas.business.distance.DistanceCalculator
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.pow
-
-
 //https://forest.moscowfsl.wsu.edu/fswepp/rc/kmlatcon.html
 class DistanceCalculatorImpl : DistanceCalculator {
     override fun calculate(geolocation: Geolocation,

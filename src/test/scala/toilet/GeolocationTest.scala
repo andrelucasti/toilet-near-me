@@ -1,7 +1,7 @@
 package io.andrelucas
 package toilet
 
-class GeolocationTest extends Unit {
+class GeolocationTest extends UnitTest {
 
   it should "return invalid geolocation when latitude is grater than 90 degrees" in {
     Geolocation(90.1, 80).left.e should be (Left(GeolocationInvalidException("geolocation is invalid")))

@@ -3,6 +3,7 @@ package toilet.domain
 
 import common.domain.usecase.UnitUseCase
 
+import com.typesafe.scalalogging.Logger
 import io.andrelucas.toilet.domain.RegisterToiletUseCase.Input
 import io.andrelucas.toilet.domain.events.ToiletEventPublisher
 
@@ -12,19 +13,24 @@ import scala.util.Try
 case class RegisterToiletUseCase(private val toiletRepository: ToiletRepository,
                                  private val toiletEventPublisher: ToiletEventPublisher) extends UnitUseCase[Input]:
 
+  private val logger = Logger(RegisterToiletUseCase.getClass.getName)
+
   override def execute(input: Input): Try[Unit] = {
 
-
     Try{
-      val toiletEither = Toilet.register(input.description, input.latitude, input.longitude)
+      val toiletEither = Toilet.register(input.customerId, input.description, input.latitude, input.longitude)
 
       toiletEither match
-        case Left(error) => throw error
+        case Left(error) =>
+          logger.error("Got an error at to register a toilet", error)
+          throw error
+
         case Right(toilet) =>
+          //TODO How can I control transaction
           toiletRepository.save(toilet)
-          toilet.events.foreach(toiletEventPublisher.publish)
+          toilet.events.foreach(event => toiletEventPublisher.publish(event.asInstanceOf))
     }
   }
 
 object RegisterToiletUseCase:
-  case class Input(id: UUID, description: String, latitude: Double, longitude: Double)
+  case class Input(customerId: UUID, description: String, latitude: Double, longitude: Double)

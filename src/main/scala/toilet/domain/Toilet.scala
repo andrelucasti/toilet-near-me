@@ -2,6 +2,7 @@ package io.andrelucas
 
 import io.andrelucas.common.domain.Aggregator
 import io.andrelucas.toilet.ToiletInvalidException
+import io.andrelucas.toilet.domain.events.ToiletRegistered
 
 import java.util.UUID
 
@@ -12,18 +13,16 @@ case class Toilet(id: UUID,
                   genre: Set[Genre]) extends Aggregator
 
 object Toilet:
-  type RegisterToilet = (String, Double, Double)
 
+  private type RegisterToilet = (UUID, String, Double, Double)
   def register(registerToilet: RegisterToilet): Either[Throwable, Toilet] =
-    if registerToilet._1.isEmpty then
+    if registerToilet._2.isEmpty then
       Left(ToiletInvalidException("Toilet does not have a valid description"))
-    else 
-      for 
-        geo <- Geolocation(registerToilet._2, registerToilet._3)
+    else
+      for
+        geo <- Geolocation(registerToilet._3, registerToilet._4)
       yield
-        val toilet = Toilet(UUID.randomUUID(), registerToilet._1, geo, Set.empty[Items], Set.empty[Genre])
-        toilet.addEvent(ToiletRegistered(toilet.id))
+        val toilet = Toilet(UUID.randomUUID(), registerToilet._2, geo, Set.empty[Items], Set.empty[Genre])
+        toilet.addEvent(ToiletRegistered(toilet.id, registerToilet._1))
 
         toilet
-  
-  case class ToiletRegistered(id: UUID)

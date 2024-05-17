@@ -3,18 +3,17 @@ package toilet.domain.usecases
 
 import toilet.domain.{RegisterToiletUseCase, ToiletRepository}
 
-import io.andrelucas.Toilet.ToiletRegistered
-import io.andrelucas.toilet.domain.events.ToiletEventPublisher
+import io.andrelucas.toilet.domain.events.{ToiletEvent, ToiletEventPublisher, ToiletRegistered}
 import org.mockito.{ArgumentCaptor, Mockito}
 
 import java.util.UUID
 
 class RegisterToiletUseCaseTest extends UnitTest {
-  private val capture: ArgumentCaptor[Toilet] = ArgumentCaptor.forClass(classOf[Toilet])
+  private val captureAggregator: ArgumentCaptor[Toilet] = ArgumentCaptor.forClass(classOf[Toilet])
+  private val captureDomainEvent: ArgumentCaptor[ToiletEvent] = ArgumentCaptor.forClass(classOf[ToiletEvent])
 
   var toiletRepository: ToiletRepository = _
   var toiletEventPublisher: ToiletEventPublisher = _
-
   var subject: RegisterToiletUseCase = _
 
   override protected def beforeEach(): Unit = {
@@ -24,7 +23,6 @@ class RegisterToiletUseCaseTest extends UnitTest {
 
     subject = RegisterToiletUseCase(toiletRepository, toiletEventPublisher)
   }
-
 
   it should "register a toilet" in {
     Mockito.reset(toiletRepository)
@@ -38,9 +36,9 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val input = RegisterToiletUseCase.Input(customerId, description, latitude, longitude)
     subject.execute(input)
 
-    Mockito.verify(toiletRepository).save(capture.capture())
+    Mockito.verify(toiletRepository).save(captureAggregator.capture())
 
-    val toilet = capture.getValue
+    val toilet = captureAggregator.getValue
     toilet.description should be (description)
     toilet.genre should be (empty)
     toilet.items should be (empty)
@@ -60,10 +58,10 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val input = RegisterToiletUseCase.Input(customerId, description, latitude, longitude)
     subject.execute(input)
 
-    Mockito.verify(toiletRepository).save(capture.capture())
+    Mockito.verify(toiletRepository).save(captureAggregator.capture())
 
-    val toilet = capture.getValue
-    Mockito.verify(toiletEventPublisher).publish(ToiletRegistered(toilet.id))
+    val toilet = captureAggregator.getValue
+    Mockito.verify(toiletEventPublisher).publish(ToiletRegistered(toilet.id, customerId))
   }
 
   it should "return an error when latitude is invalid" in {
@@ -79,7 +77,41 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val output = subject.execute(input)
 
     output.toEither.left.e should be (Left(GeolocationInvalidException("geolocation is invalid")))
-    Mockito.verify(toiletRepository, Mockito.never()).save(capture.capture())
-    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(capture.capture())
+    Mockito.verify(toiletRepository, Mockito.never()).save(captureAggregator.capture())
+    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(captureDomainEvent.capture())
+  }
+
+  it should "return an error when longitude is invalid" in {
+    Mockito.reset(toiletRepository)
+    Mockito.reset(toiletEventPublisher)
+
+    val customerId = UUID.randomUUID()
+    val description = "Gym Life Club"
+    val latitude = 8.1
+    val invalidLongitude = 190.99
+
+    val input = RegisterToiletUseCase.Input(customerId, description, latitude, invalidLongitude)
+    val output = subject.execute(input)
+
+    output.toEither.left.e should be(Left(GeolocationInvalidException("geolocation is invalid")))
+    Mockito.verify(toiletRepository, Mockito.never()).save(captureAggregator.capture())
+    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(captureDomainEvent.capture())
+  }
+
+  it should "return an error when happens some error in the save moment" in {
+    Mockito.reset(toiletRepository)
+    Mockito.reset(toiletEventPublisher)
+
+    val customerId = UUID.randomUUID()
+    val description = "Gym Life Club"
+    val latitude = 8.1
+    val longitude = 8
+
+    val input = RegisterToiletUseCase.Input(customerId, description, latitude, longitude)
+
+    Mockito.when(toiletRepository.save(captureAggregator.capture())).thenThrow(new RuntimeException("Got an error when saving an toilet"))
+
+    val output = subject.execute(input)
+    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(captureDomainEvent.capture())
   }
 }

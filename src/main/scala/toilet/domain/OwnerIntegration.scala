@@ -1,8 +1,8 @@
 package io.andrelucas
 package toilet.domain
 
-import toilet.domain.commands.CreateToiletOwnerCommand
+import io.andrelucas.owner.domain.commands.CreateToiletOwnerCommand
 
-trait ToiletIntegration:
+trait OwnerIntegration:
   def createToiletOwner(createToiletOwnerCommand: CreateToiletOwnerCommand): Unit
 

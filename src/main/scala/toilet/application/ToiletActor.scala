@@ -1,15 +1,17 @@
 package io.andrelucas
 package toilet.application
 
-import io.andrelucas.toilet.domain.ToiletIntegration
-import io.andrelucas.toilet.domain.commands.CreateToiletOwnerCommand
+import io.andrelucas.owner.domain.commands.CreateToiletOwnerCommand
+import io.andrelucas.toilet.domain.OwnerIntegration
 import io.andrelucas.toilet.domain.events.{ToiletEvent, ToiletRegistered}
 import org.apache.pekko.actor.typed.Behavior
 import org.apache.pekko.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 
 import java.util.UUID
 
-class ToiletRegisteredActor(context: ActorContext[ToiletEvent], toiletIntegration: ToiletIntegration) extends AbstractBehavior[ToiletEvent](context):
+class ToiletActor(context: ActorContext[ToiletEvent], toiletIntegration: OwnerIntegration) extends AbstractBehavior[ToiletEvent](context):
+  context.log.info("Started")
+  
   private def createToiletOwnerCommand:(UUID, UUID) => Unit = (toiletId, customerId) =>
     toiletIntegration.createToiletOwner(CreateToiletOwnerCommand(customerId, toiletId))
 
@@ -22,7 +24,7 @@ class ToiletRegisteredActor(context: ActorContext[ToiletEvent], toiletIntegratio
 
 
 
-object ToiletRegisteredActor:
-  def apply(toiletIntegration: ToiletIntegration): Behavior[ToiletEvent] =
-    Behaviors.setup(new ToiletRegisteredActor(_, toiletIntegration))
+object ToiletActor:
+  def apply(toiletIntegration: OwnerIntegration): Behavior[ToiletEvent] =
+    Behaviors.setup(new ToiletActor(_, toiletIntegration))
 

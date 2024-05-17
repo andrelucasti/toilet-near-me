@@ -1,11 +1,15 @@
 package io.andrelucas
 package toilet.application
 
-import org.apache.pekko.actor.typed.{Behavior, PostStop, Signal}
+import io.andrelucas.toilet.domain.OwnerIntegration
+import org.apache.pekko.actor.typed.{Behavior, PostStop, Signal, SupervisorStrategy}
 import org.apache.pekko.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Behaviors}
 
-class ToiletSupervisor(context: ActorContext[Nothing]) extends AbstractBehavior[Nothing](context):
+class ToiletSupervisor(context: ActorContext[Nothing], ownerIntegration: OwnerIntegration) extends AbstractBehavior[Nothing](context):
   context.log.info("Started")
+
+  private val supervise = Behaviors.supervise(ToiletActor(ownerIntegration)).onFailure(SupervisorStrategy.restart)
+  context.spawn(supervise, "ToiletActor")
 
   override def onMessage(msg: Nothing): Behavior[Nothing] =
     Behaviors.unhandled
@@ -16,5 +20,5 @@ class ToiletSupervisor(context: ActorContext[Nothing]) extends AbstractBehavior[
       this
 
 object ToiletSupervisor:
-  def apply(): Behavior[Nothing] =
-    Behaviors.setup[Nothing](new ToiletSupervisor(_))
+  def apply(ownerIntegration: OwnerIntegration): Behavior[Nothing] =
+    Behaviors.setup[Nothing](new ToiletSupervisor(_, ownerIntegration))

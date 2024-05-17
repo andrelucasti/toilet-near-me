@@ -7,5 +7,5 @@ import org.scalatestplus.mockito.MockitoSugar
 
 
 trait UnitTest extends AnyFlatSpecLike
-  with Matchers 
+  with Matchers
   with MockitoSugar with BeforeAndAfterEach

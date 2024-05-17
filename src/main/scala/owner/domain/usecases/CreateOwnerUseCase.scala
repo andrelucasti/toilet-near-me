@@ -10,7 +10,7 @@ import scala.util.Try
 
 case class CreateOwnerUseCase() extends UnitUseCase[Input]:
   override def execute(input: Input): Try[Unit] = Try {
-    println(s"Creating owner $input")
+    println(s"Owner Created => $input")
   }
 
 object CreateOwnerUseCase:

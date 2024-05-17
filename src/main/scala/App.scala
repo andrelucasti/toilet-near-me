@@ -33,17 +33,17 @@ object AppDeclaration {
 
 object App:
   def main(args: Array[String]): Unit = {
-  val createOwnerUseCase = CreateOwnerUseCase()
-  val ownerCommandActor = ActorSystem[OwnerCommand](OwnerCommandActor(createOwnerUseCase), "ownerCommandActor")
-  val ownerIntegration = OwnerPekkoIntegration(ownerCommandActor)
-    //ActorSystem[Nothing](ToiletSupervisor(ownerIntegration), "toiletSupervisorActor")
 
-  val toiletActor = ActorSystem[ToiletEvent](ToiletActor(ownerIntegration), "toiletActor")
-  val toiletEventPublisher: ToiletEventPublisher = ToiletEventPublisherImp(toiletActor)
+    //Owner
+    val ownerCommandActor = ActorSystem[OwnerCommand](OwnerCommandActor(CreateOwnerUseCase()), "ownerCommandActor")
+    val ownerIntegration = OwnerPekkoIntegration(ownerCommandActor)
 
+    //Toilet
+    val toiletSupervisorActor = ActorSystem[ToiletEvent](ToiletSupervisor(ownerIntegration), "toiletSupervisorActor")
+    val toiletEventPublisher: ToiletEventPublisher = ToiletEventPublisherImp(toiletSupervisorActor)
 
-  val registerToiletUseCase = RegisterToiletUseCase(repository, toiletEventPublisher)
-
-  val registerInput = RegisterToiletUseCase.Input(UUID.randomUUID(), "test", 9.656, -34.900)
-  registerToiletUseCase.execute(registerInput)
+    //Register Toilet
+    val registerToiletUseCase = RegisterToiletUseCase(repository, toiletEventPublisher)
+    val registerInput = RegisterToiletUseCase.Input(UUID.randomUUID(), "test", 9.656, -34.900)
+    registerToiletUseCase.execute(registerInput)
 }

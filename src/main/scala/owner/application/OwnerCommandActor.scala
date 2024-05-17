@@ -15,7 +15,8 @@ class OwnerCommandActor(context: ActorContext[OwnerCommand],
   override def onMessage(msg: OwnerCommand): Behavior[OwnerCommand] =
     msg match
       case CreateToiletOwnerCommand(customerId, toiletId) =>
-        context.log.info(s"Creating owner $customerId | $toiletId")
+        val ownerRef = context.spawn(Behaviors.empty[String], "ownerChild")
+        context.log.info(s"Creating owner $customerId | $toiletId - $ownerRef")
 
         createOwnerUseCase.execute(CreateOwnerUseCase.Input(customerId, toiletId))
         this

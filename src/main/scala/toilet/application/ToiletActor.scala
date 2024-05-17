@@ -9,7 +9,8 @@ import org.apache.pekko.actor.typed.scaladsl.{AbstractBehavior, ActorContext, Be
 
 import java.util.UUID
 
-class ToiletActor(context: ActorContext[ToiletEvent], toiletIntegration: OwnerIntegration) extends AbstractBehavior[ToiletEvent](context):
+class ToiletActor(context: ActorContext[ToiletEvent], 
+                  toiletIntegration: OwnerIntegration) extends AbstractBehavior[ToiletEvent](context):
   context.log.info("Started")
   
   private def createToiletOwnerCommand:(UUID, UUID) => Unit = (toiletId, customerId) =>
@@ -18,7 +19,8 @@ class ToiletActor(context: ActorContext[ToiletEvent], toiletIntegration: OwnerIn
   override def onMessage(msg: ToiletEvent): Behavior[ToiletEvent] =
     msg match
       case ToiletRegistered(id, customerId) =>
-        context.log.info(s"Toilet Registered - id: $id | customerId: $customerId")
+        val toiletRef = context.spawn(Behaviors.empty[String], "toiletChild")
+        context.log.info(s"Toilet Registered - id: $id | customerId: $customerId - $toiletRef")
         createToiletOwnerCommand(id, customerId)
         this
 

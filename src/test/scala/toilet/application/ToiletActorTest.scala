@@ -5,7 +5,7 @@ import owner.domain.OwnerCommand
 import owner.domain.commands.CreateToiletOwnerCommand
 import toilet.domain.OwnerIntegration
 import toilet.domain.events.ToiletRegistered
-import toilet.infra.OwnerPekkoIntegration
+import io.andrelucas.toilet.infra.integration.OwnerPekkoIntegration
 
 import org.apache.pekko.actor.testkit.typed.CapturedLogEvent
 import org.apache.pekko.actor.testkit.typed.scaladsl.{BehaviorTestKit, ScalaTestWithActorTestKit}
@@ -44,6 +44,7 @@ class ToiletActorTest extends ScalaTestWithActorTestKit with UnitTest {
     val toiletActor = testKit.spawn(ToiletActor(ownerIntegration))
     toiletActor ! ToiletRegistered(toiletId, customerId)
 
-    ownerCommandActor.expectMessage(CreateToiletOwnerCommand(customerId, toiletId))
+    val ownerCommand = ownerCommandActor.receiveMessage()
+    ownerCommand should be (CreateToiletOwnerCommand(customerId, toiletId))
   }
 }

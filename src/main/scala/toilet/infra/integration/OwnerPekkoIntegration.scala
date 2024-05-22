@@ -1,5 +1,5 @@
 package io.andrelucas
-package toilet.infra
+package toilet.infra.integration
 
 import owner.domain.OwnerCommand
 import owner.domain.commands.CreateToiletOwnerCommand

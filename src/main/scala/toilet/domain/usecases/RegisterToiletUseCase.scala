@@ -5,7 +5,7 @@ import common.domain.usecase.UnitUseCase
 
 import com.typesafe.scalalogging.Logger
 import io.andrelucas.toilet.domain.RegisterToiletUseCase.Input
-import io.andrelucas.toilet.domain.events.ToiletEventPublisher
+import io.andrelucas.toilet.domain.events.{ToiletEvent, ToiletEventPublisher}
 
 import java.util.UUID
 import scala.util.Try
@@ -26,9 +26,9 @@ case class RegisterToiletUseCase(private val toiletRepository: ToiletRepository,
           throw error
 
         case Right(toilet) =>
-          //TODO How can I control transaction
           toiletRepository.save(toilet)
-          toilet.events.foreach(event => toiletEventPublisher.publish(event.asInstanceOf))
+         
+          publishEvents[ToiletEvent](toilet, toiletEventPublisher)
     }
   }
 

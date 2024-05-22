@@ -1,5 +1,7 @@
 package io.andrelucas
 package toilet.domain.events
 
-trait ToiletEventPublisher:
+import common.domain.event.EventPublisher
+
+trait ToiletEventPublisher extends EventPublisher[ToiletEvent]:
   def publish(event: ToiletEvent): Unit

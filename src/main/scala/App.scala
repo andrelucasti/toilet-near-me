@@ -6,8 +6,10 @@ import io.andrelucas.owner.domain.{CreateOwnerUseCase, OwnerCommand}
 import io.andrelucas.toilet.application.{ToiletActor, ToiletEventPublisherImp, ToiletSupervisor}
 import io.andrelucas.toilet.domain.{RegisterToiletUseCase, ToiletRepository}
 import io.andrelucas.toilet.domain.events.{ToiletEvent, ToiletEventPublisher}
-import io.andrelucas.toilet.infra.OwnerPekkoIntegration
+import io.andrelucas.toilet.infra.db.slick.SlickToiletRepository
+import io.andrelucas.toilet.infra.integration.OwnerPekkoIntegration
 import org.apache.pekko.actor.typed.ActorSystem
+import slick.jdbc.JdbcBackend.Database
 
 import java.util.UUID
 import scala.collection.mutable
@@ -33,17 +35,17 @@ object AppDeclaration {
 
 object App:
   def main(args: Array[String]): Unit = {
-
-    //Owner
-    val ownerCommandActor = ActorSystem[OwnerCommand](OwnerCommandActor(CreateOwnerUseCase()), "ownerCommandActor")
-    val ownerIntegration = OwnerPekkoIntegration(ownerCommandActor)
-
-    //Toilet
-    val toiletSupervisorActor = ActorSystem[ToiletEvent](ToiletSupervisor(ownerIntegration), "toiletSupervisorActor")
-    val toiletEventPublisher: ToiletEventPublisher = ToiletEventPublisherImp(toiletSupervisorActor)
-
-    //Register Toilet
-    val registerToiletUseCase = RegisterToiletUseCase(repository, toiletEventPublisher)
-    val registerInput = RegisterToiletUseCase.Input(UUID.randomUUID(), "test", 9.656, -34.900)
-    registerToiletUseCase.execute(registerInput)
+//    val db = Database.forConfig("toiletdb")
+//    //Owner
+//    val ownerCommandActor = ActorSystem[OwnerCommand](OwnerCommandActor(CreateOwnerUseCase()), "ownerCommandActor")
+//    val ownerIntegration = OwnerPekkoIntegration(ownerCommandActor)
+//
+//    //Toilet
+//    val toiletSupervisorActor = ActorSystem[ToiletEvent](ToiletSupervisor(ownerIntegration), "toiletSupervisorActor")
+//    val toiletEventPublisher: ToiletEventPublisher = ToiletEventPublisherImp(toiletSupervisorActor)
+//
+//    //Register Toilet
+//    val registerToiletUseCase = RegisterToiletUseCase(new SlickToiletRepository(db), toiletEventPublisher)
+//    val registerInput = RegisterToiletUseCase.Input(UUID.randomUUID(), "test", 9.656, -34.900)
+//    registerToiletUseCase.execute(registerInput)
 }

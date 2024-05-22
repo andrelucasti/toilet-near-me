@@ -19,8 +19,6 @@ class ToiletActor(context: ActorContext[ToiletEvent],
   override def onMessage(msg: ToiletEvent): Behavior[ToiletEvent] =
     msg match
       case ToiletRegistered(id, customerId) =>
-        val toiletRef = context.spawn(Behaviors.empty[String], "toiletChild")
-        context.log.info(s"Toilet Registered - id: $id | customerId: $customerId - $toiletRef")
         createToiletOwnerCommand(id, customerId)
         this
 

@@ -8,9 +8,10 @@ import io.andrelucas.owner.domain.CreateOwnerUseCase.Input
 import java.util.UUID
 import scala.util.Try
 
-case class CreateOwnerUseCase() extends UnitUseCase[Input]:
+case class CreateOwnerUseCase(private val ownerRepository: OwnerRepository) extends UnitUseCase[Input]:
   override def execute(input: Input): Try[Unit] = Try {
-    println(s"Owner Created => $input")
+    val owner = Owner.create(input.customerId, input.toiletId)
+    ownerRepository.save(owner)
   }
 
 object CreateOwnerUseCase:

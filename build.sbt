@@ -31,6 +31,8 @@ libraryDependencies += "org.apache.pekko" %% "pekko-actor-typed" % PekkoVersion
 libraryDependencies += "org.scalatest" %% "scalatest" % scalaTestVersion % Test
 libraryDependencies += "org.scalatestplus" %% "mockito-5-10" % scalaMockitoVersion % Test
 libraryDependencies += "org.apache.pekko" %% "pekko-actor-testkit-typed" % PekkoVersion % Test
+libraryDependencies += "org.awaitility" % "awaitility-scala" % "4.2.0" % Test
+
 
 libraryDependencies ++= slick
 libraryDependencies += "org.postgresql" % "postgresql" % pgVersion

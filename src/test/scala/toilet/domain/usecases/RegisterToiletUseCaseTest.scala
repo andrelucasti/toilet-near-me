@@ -1,12 +1,16 @@
 package io.andrelucas
 package toilet.domain.usecases
 
+import toilet.domain.events.{ToiletEvent, ToiletEventPublisher, ToiletRegistered}
 import toilet.domain.{RegisterToiletUseCase, ToiletRepository}
 
-import io.andrelucas.toilet.domain.events.{ToiletEvent, ToiletEventPublisher, ToiletRegistered}
+import org.awaitility.Awaitility.await
+import org.mockito.Mockito.*
 import org.mockito.{ArgumentCaptor, Mockito}
 
 import java.util.UUID
+import java.util.concurrent.TimeUnit
+import scala.util.Failure
 
 class RegisterToiletUseCaseTest extends UnitTest {
   private val captureAggregator: ArgumentCaptor[Toilet] = ArgumentCaptor.forClass(classOf[Toilet])
@@ -25,8 +29,8 @@ class RegisterToiletUseCaseTest extends UnitTest {
   }
 
   it should "register a toilet" in {
-    Mockito.reset(toiletRepository)
-    Mockito.reset(toiletEventPublisher)
+    reset(toiletRepository)
+    reset(toiletEventPublisher)
 
     val customerId = UUID.randomUUID()
     val description = "Gym Life Club"
@@ -36,7 +40,7 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val input = RegisterToiletUseCase.Input(customerId, description, latitude, longitude)
     subject.execute(input)
 
-    Mockito.verify(toiletRepository).save(captureAggregator.capture())
+    verify(toiletRepository).save(captureAggregator.capture())
 
     val toilet = captureAggregator.getValue
     toilet.description should be (description)
@@ -47,8 +51,8 @@ class RegisterToiletUseCaseTest extends UnitTest {
   }
 
   it should "publish a domain event when a register a toilet" in {
-    Mockito.reset(toiletRepository)
-    Mockito.reset(toiletEventPublisher)
+    reset(toiletRepository)
+    reset(toiletEventPublisher)
 
     val customerId = UUID.randomUUID()
     val description = "Gym Life Club"
@@ -58,15 +62,15 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val input = RegisterToiletUseCase.Input(customerId, description, latitude, longitude)
     subject.execute(input)
 
-    Mockito.verify(toiletRepository).save(captureAggregator.capture())
+    verify(toiletRepository).save(captureAggregator.capture())
 
     val toilet = captureAggregator.getValue
-    Mockito.verify(toiletEventPublisher).publish(ToiletRegistered(toilet.id, customerId))
+    verify(toiletEventPublisher).publish(ToiletRegistered(toilet.id, customerId))
   }
 
   it should "return an error when latitude is invalid" in {
-    Mockito.reset(toiletRepository)
-    Mockito.reset(toiletEventPublisher)
+    reset(toiletRepository)
+    reset(toiletEventPublisher)
 
     val customerId = UUID.randomUUID()
     val description = "Gym Life Club"
@@ -76,14 +80,22 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val input = RegisterToiletUseCase.Input(customerId, description, invalidLatitude, longitude)
     val output = subject.execute(input)
 
-    output.toEither.left.e should be (Left(GeolocationInvalidException("geolocation is invalid")))
-    Mockito.verify(toiletRepository, Mockito.never()).save(captureAggregator.capture())
-    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(captureDomainEvent.capture())
+    await atMost(5, TimeUnit.SECONDS) untilAsserted {
+      output.isCompleted should be (true)
+      output.value match
+        case Some(Failure(exception: GeolocationInvalidException)) =>
+          exception should be (GeolocationInvalidException("geolocation is invalid"))
+        case _ =>
+          fail("Expected a GeolocationInvalidException")
+
+      verify(toiletRepository, never()).save(captureAggregator.capture())
+      verify(toiletEventPublisher, never()).publish(captureDomainEvent.capture())
+    }
   }
 
   it should "return an error when longitude is invalid" in {
-    Mockito.reset(toiletRepository)
-    Mockito.reset(toiletEventPublisher)
+    reset(toiletRepository)
+    reset(toiletEventPublisher)
 
     val customerId = UUID.randomUUID()
     val description = "Gym Life Club"
@@ -93,14 +105,22 @@ class RegisterToiletUseCaseTest extends UnitTest {
     val input = RegisterToiletUseCase.Input(customerId, description, latitude, invalidLongitude)
     val output = subject.execute(input)
 
-    output.toEither.left.e should be(Left(GeolocationInvalidException("geolocation is invalid")))
-    Mockito.verify(toiletRepository, Mockito.never()).save(captureAggregator.capture())
-    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(captureDomainEvent.capture())
+    await atMost(5, TimeUnit.SECONDS) untilAsserted{
+      output.isCompleted should be (true)
+      output.value match
+        case Some(Failure(exception: GeolocationInvalidException)) =>
+          exception should be (GeolocationInvalidException("geolocation is invalid"))
+        case _ =>
+          fail("Expected a GeolocationInvalidException")
+    }
+
+    verify(toiletRepository, never()).save(captureAggregator.capture())
+    verify(toiletEventPublisher, never()).publish(captureDomainEvent.capture())
   }
 
   it should "return an error when happens some error in the save moment" in {
-    Mockito.reset(toiletRepository)
-    Mockito.reset(toiletEventPublisher)
+    reset(toiletRepository)
+    reset(toiletEventPublisher)
 
     val customerId = UUID.randomUUID()
     val description = "Gym Life Club"
@@ -109,9 +129,13 @@ class RegisterToiletUseCaseTest extends UnitTest {
 
     val input = RegisterToiletUseCase.Input(customerId, description, latitude, longitude)
 
-    Mockito.when(toiletRepository.save(captureAggregator.capture())).thenThrow(new RuntimeException("Got an error when saving an toilet"))
+    when(toiletRepository.save(captureAggregator.capture()))
+      .thenThrow(RuntimeException("Got an error when saving an toilet"))
 
-    val output = subject.execute(input)
-    Mockito.verify(toiletEventPublisher, Mockito.never()).publish(captureDomainEvent.capture())
+    assertThrows[RuntimeException]{
+      val output = subject.execute(input)
+    }
+
+    verify(toiletEventPublisher, never()).publish(captureDomainEvent.capture())
   }
 }

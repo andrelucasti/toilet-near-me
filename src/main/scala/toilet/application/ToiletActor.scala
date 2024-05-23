@@ -14,6 +14,7 @@ class ToiletActor(context: ActorContext[ToiletEvent],
   context.log.info("Started")
   
   private def createToiletOwnerCommand:(UUID, UUID) => Unit = (toiletId, customerId) =>
+    context.log.debug(s"Toilet Registered - id: $toiletId | customerId: $customerId")
     toiletIntegration.createToiletOwner(CreateToiletOwnerCommand(customerId, toiletId))
 
   override def onMessage(msg: ToiletEvent): Behavior[ToiletEvent] =
@@ -21,8 +22,6 @@ class ToiletActor(context: ActorContext[ToiletEvent],
       case ToiletRegistered(id, customerId) =>
         createToiletOwnerCommand(id, customerId)
         this
-
-
 
 object ToiletActor:
   def apply(toiletIntegration: OwnerIntegration): Behavior[ToiletEvent] =

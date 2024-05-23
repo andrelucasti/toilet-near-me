@@ -36,7 +36,7 @@ class SlickOwnerRepository(db: Database) extends OwnerRepository {
       }.toList)
     
 
-  override def findById(id: UUID): Future[Owner] = ???
+  override def findById(id: UUID): Future[Option[Owner]] = ???
 
   override def update(entity: Owner): Future[Unit] = ???
 

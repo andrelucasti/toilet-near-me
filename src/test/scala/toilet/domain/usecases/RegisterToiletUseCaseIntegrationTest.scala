@@ -5,6 +5,7 @@ import common.AsyncIntegrationTest
 import toilet.domain.events.ToiletEventPublisher
 import toilet.domain.{RegisterToiletUseCase, ToiletRepository}
 import toilet.infra.db.slick.SlickToiletRepository
+import scala.concurrent.ExecutionContext.Implicits.global
 
 import org.scalatest.flatspec.AsyncFlatSpec
 

@@ -1,10 +1,11 @@
 package io.andrelucas
 package toilet
 
-import io.andrelucas.toilet.domain.events.ToiletRegistered
+import io.andrelucas.toilet.domain.events.{ItemAdded, ToiletRegistered}
 import org.scalatest.matchers.must.Matchers.not
 
 import java.util.UUID
+import scala.collection.immutable.Set
 
 class ToiletTest extends UnitTest {
   
@@ -40,5 +41,29 @@ class ToiletTest extends UnitTest {
     } yield
       Right(toiletEvent.id) should be (toilet.map(_.id))
       toiletEvent.events should contain (ToiletRegistered(toiletEvent.id, customerId))
+  }
+
+  it should "add a item" in {
+    val customerId = UUID.randomUUID()
+    val toiletId = UUID.randomUUID()
+
+    val geo = Geolocation(69.9999, -45.8965).toOption.get
+    val toilet = Toilet(toiletId, "Benfica Stadium", geo, Set.empty, Set.empty)
+
+    val toiletUpdated = toilet.addItem("soap", customerId)
+
+    toiletUpdated.items.map(_.description) should contain ("soap")
+  }
+  
+  it should "save domain event when a item is added" in {
+    val customerId = UUID.randomUUID()
+    val toiletId = UUID.randomUUID()
+
+    val geo = Geolocation(69.9999, -45.8965).toOption.get
+    val toilet = Toilet(toiletId, "Benfica Stadium", geo, Set.empty, Set.empty)
+
+    val toiletUpdated = toilet.addItem("soap", customerId)
+    
+    toiletUpdated.events should contain (ItemAdded(toiletId, customerId))
   }
 }

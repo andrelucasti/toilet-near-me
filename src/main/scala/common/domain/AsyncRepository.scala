@@ -7,4 +7,4 @@ trait AsyncRepository[Entity <: Aggregator, ID]:
   def save(entity: Entity): Future[Unit]
   def findAll(): Future[List[Entity]]
   def update(entity: Entity): Future[Unit]
-  def findById(id: ID): Future[Entity]
+  def findById(id: ID): Future[Option[Entity]]

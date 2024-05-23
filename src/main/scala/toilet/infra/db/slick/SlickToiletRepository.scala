@@ -22,7 +22,7 @@ class SlickToiletRepository(db: Database) extends ToiletRepository {
     db.run(insert)
   }
 
-  override def findById(id: UUID): Future[Toilet] = ???
+  override def findById(id: UUID): Future[Option[Toilet]] = ???
 
   override def findAll(): Future[List[Toilet]] =
     val query = toiletTable.map(t =>(t.id, t.description, t.latitude, t.longitude))
@@ -39,4 +39,9 @@ class SlickToiletRepository(db: Database) extends ToiletRepository {
     }.toList)
   
   override def update(entity: Toilet): Future[Unit] = ???
+
+  override def exists(id: UUID): Future[Boolean] =
+    val query = toiletTable.filter(_.id === id).exists.result
+    
+    db.run(query)
 }

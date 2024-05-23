@@ -28,7 +28,9 @@ object AppDeclaration {
 
     override def update(entity: Toilet): Future[Unit] = ???
 
-    override def findById(id: UUID): Future[Toilet] = ???
+    override def findById(id: UUID): Future[Option[Toilet]] = ???
+
+    override def exists(id: UUID): Future[Boolean] = ???
 
 }
 

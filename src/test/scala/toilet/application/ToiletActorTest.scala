@@ -31,7 +31,7 @@ class ToiletActorTest extends ScalaTestWithActorTestKit with UnitTest {
     val command = capture.getValue
     command should be (CreateToiletOwnerCommand(customerId, toiletId))
 
-    toiletActor.logEntries() should be (Seq(CapturedLogEvent(Level.INFO, s"Toilet Registered - id: $toiletId | customerId: $customerId")))
+    toiletActor.logEntries() should contain (CapturedLogEvent(Level.DEBUG, s"Toilet Registered - id: $toiletId | customerId: $customerId"))
   }
 
   it should "send create toilet owner command when a toilet is registered" in {

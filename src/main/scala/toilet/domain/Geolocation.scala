@@ -12,3 +12,9 @@ object Geolocation:
       Left(GeolocationInvalidException("geolocation is invalid"))
     else
       Right(new Geolocation(latitude, longitude))
+  
+  def restore(latitude: Double, longitude: Double): Geolocation = 
+    Geolocation(latitude, longitude) match 
+      case Right(value) => value 
+      case Left(exception) => throw exception
+    

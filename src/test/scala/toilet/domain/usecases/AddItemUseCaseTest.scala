@@ -32,16 +32,16 @@ class AddItemUseCaseTest extends UnitTest {
     val geo = Geolocation(69.9999, -45.8965).toOption.get
     val toilet = Toilet(toiletId, "Benfica Park", geo, Set.empty, Set.empty)
 
-    when(toiletRepository.findById(toiletId)).thenReturn(Future.apply(Some(toilet)))
+    when(toiletRepository.findById(toiletId)).thenReturn(Future.successful(Some(toilet)))
 
     subject.execute(item)
     await atMost(30, TimeUnit.SECONDS) untilAsserted {
       verify(toiletRepository).update(captureAggregator.capture())
-
-      val toiletUpdated = captureAggregator.getValue
-      toiletUpdated.id should be(toiletId)
-      toiletUpdated.items.map(_.description) should contain(item.description)
     }
+
+    val toiletUpdated = captureAggregator.getValue
+    toiletUpdated.id should be(toiletId)
+    toiletUpdated.items.map(_.description) should contain(item.description)
   }
 
   it should "got an error when the toilet still doesn't exists" in {

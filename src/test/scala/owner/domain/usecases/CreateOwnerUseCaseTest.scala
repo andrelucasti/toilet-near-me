@@ -53,6 +53,5 @@ class CreateOwnerUseCaseTest extends UnitTest {
     val output = subject.execute(input)
 
     await untilAsserted { Mockito.verify(ownerRepository, Mockito.never()).save(captureAggregator.capture()) }
-    //output.toEither.isLeft should be(true)
   }
 }

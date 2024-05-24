@@ -5,12 +5,14 @@ import owner.domain.{CreateOwnerUseCase, Owner, OwnerRepository}
 
 import io.andrelucas.common.AsyncIntegrationTest
 import io.andrelucas.owner.infra.db.slick.SlickOwnerRepository
+import io.andrelucas.owner.infrastructure.InMemoryOwner
 import io.andrelucas.toilet.domain.ToiletRepository
 import io.andrelucas.toilet.infra.db.slick.SlickToiletRepository
+import io.andrelucas.toilet.infrastructure.db.InMemoryToilet
 import org.awaitility.Awaitility.await
 import org.mockito.{ArgumentCaptor, Mockito}
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import java.time.Duration
 import java.util.UUID
 
@@ -22,6 +24,7 @@ class CreateOwnerUseCaseIntegrationTest extends AsyncIntegrationTest {
 
   override protected def beforeEach(): Unit = {
     super.beforeEach()
+
     ownerRepository = new SlickOwnerRepository(db)
     toiletRepository = new SlickToiletRepository(db)
     subject = CreateOwnerUseCase(ownerRepository, toiletRepository)
